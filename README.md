@@ -1,2 +1,2 @@
-# junit5-examples
+# springboot-junit5-examples
 Junit Examples
