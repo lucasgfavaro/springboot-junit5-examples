@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +27,7 @@ class InvoicesServiceTest {
     }
 
     private List<Invoice> generateInvoiceList() {
+
         return Arrays.asList(new Invoice(3L), new Invoice(4L));
     }
 
@@ -36,6 +36,7 @@ class InvoicesServiceTest {
         Optional<Invoice> invoice = invoicesService.getInvoice(3L);
         assertTrue(invoice.isPresent());
         assertNotNull(invoice.get().getId());
+        assertEquals(3L,invoice.get().getId());
     }
 
 
