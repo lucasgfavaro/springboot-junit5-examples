@@ -7,14 +7,17 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InvoicesServiceTest {
@@ -30,13 +33,16 @@ class InvoicesServiceTest {
 
         //Assert
         assertTrue(invoice.isPresent());
-        assertNotNull(invoice.get().getId());
-        assertEquals(3L, invoice.get().getId());
+        Assertions.assertAll("Invoice is not equal to the selected one",
+                () -> Assertions.assertNotNull(invoice.get().getId()),
+                () -> Assertions.assertEquals(3L, invoice.get().getId()));
+        verify(invoiceRepository, times(1)).listAll();
     }
 
     @Test
-    void Given_NonExistentInvoiceId_When_GetInvoiceIsCalled_Then_EmptyOptionalInvoiceIsReturned(@Mock InvoiceRepository invoiceRepository) {
+    void Given_NonExistentInvoiceId_When_GetInvoiceIsCalled_Then_EmptyOptionalInvoiceIsReturned() {
         //Arrange
+        InvoiceRepository invoiceRepository = Mockito.spy(new InvoiceRepository());
         InvoicesService invoicesService = new InvoicesService(invoiceRepository);
 
         //Act
@@ -44,17 +50,18 @@ class InvoicesServiceTest {
 
         //Assert
         assertFalse(invoice.isPresent());
+        verify(invoiceRepository, times(1)).listAll();
     }
 
     @Test
-    void Given_InvalidInvoiceId_When_GetInvoiceIsCalled_Then_ExceptionIsThrown() {
+    void Given_InvalidInvoiceId_When_GetInvoiceIsCalled_Then_ExceptionIsThrown(@Mock InvoiceRepository invoiceRepository) {
         //Arrange
-        InvoicesService invoicesService = new InvoicesService(new InvoiceRepository());
+        InvoicesService invoicesService = new InvoicesService(invoiceRepository);
 
         //Act & Assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Optional<Invoice> invoice = invoicesService.getInvoice(20L);
-        });
+        Exception thrownException = Assertions.assertThrows(IllegalArgumentException.class, () -> invoicesService.getInvoice(20L), "Exception not thrown");
+        assertEquals("Invalid Id", thrownException.getMessage(), "Exception message does not match");
+        verifyNoInteractions(invoiceRepository);
     }
 
     @Test
