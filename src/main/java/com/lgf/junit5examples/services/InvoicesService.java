@@ -15,7 +15,7 @@ public class InvoicesService {
 
     public Optional<Invoice> getInvoice(Long id) {
 
-        if (id > 10)
+        if (id > 10L)
             throw new IllegalArgumentException("Invalid Id");
 
         return invoiceRepository.listAll().stream().filter(i -> i.getId().equals(id)).findFirst();

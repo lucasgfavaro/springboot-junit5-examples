@@ -2,16 +2,15 @@ package com.lgf.junit5examples.services;
 
 import com.lgf.junit5examples.dto.Invoice;
 import com.lgf.junit5examples.repositories.InvoiceRepository;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InvoicesServiceTest {
+
 
     @Test
     void Given_ValidExistentInvoiceId_When_GetInvoiceIsCalled_Then_NonEmptyOptionalInvoiceIsReturned(@Mock InvoiceRepository invoiceRepository) {
@@ -34,8 +34,8 @@ class InvoicesServiceTest {
         //Assert
         assertTrue(invoice.isPresent());
         Assertions.assertAll("Invoice is not equal to the selected one",
-                () -> Assertions.assertNotNull(invoice.get().getId()),
-                () -> Assertions.assertEquals(3L, invoice.get().getId()));
+                () -> assertNotNull(invoice.get().getId()),
+                () -> assertEquals(3L, (long) invoice.get().getId()));
         verify(invoiceRepository, times(1)).listAll();
     }
 
@@ -59,7 +59,8 @@ class InvoicesServiceTest {
         InvoicesService invoicesService = new InvoicesService(invoiceRepository);
 
         //Act & Assert
-        Exception thrownException = Assertions.assertThrows(IllegalArgumentException.class, () -> invoicesService.getInvoice(20L), "Exception not thrown");
+        Exception thrownException = assertThrows(IllegalArgumentException.class,
+                () -> invoicesService.getInvoice(11L), "Exception not thrown");
         assertEquals("Invalid Id", thrownException.getMessage(), "Exception message does not match");
         verifyNoInteractions(invoiceRepository);
     }
